@@ -8,3 +8,5 @@
 - Gustavo Tavares
 - Marco Aurélio
 - Rodrigo Mosken
+
+#### Cada branch é referente à uma entrega de atividade!
