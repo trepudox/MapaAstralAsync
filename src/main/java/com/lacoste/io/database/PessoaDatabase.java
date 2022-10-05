@@ -24,8 +24,4 @@ public class PessoaDatabase {
         return new ArrayList<>(PESSOAS_DB.values());
     }
 
-    public static Optional<Pessoa> findById(Long id) {
-        return Optional.ofNullable(PESSOAS_DB.getOrDefault(id, null));
-    }
-
 }
