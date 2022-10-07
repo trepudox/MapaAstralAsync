@@ -1,12 +1,4 @@
-# MapaAstral
+# MapaAstralAsync
 
-## Projeto mapa astral para as aulas de Tecnicas de Programação da Ada/Let's Code
+## Projeto mapa astral (branch batch-mapa-astral) forkado para torná-lo assíncrono
 
-### Integrantes:
-- Andressa Oliveira
-- Gustavo Roberto
-- Gustavo Tavares
-- Marco Aurélio
-- Rodrigo Mosken
-
-#### Cada branch é referente à uma entrega de atividade!
