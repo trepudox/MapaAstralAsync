@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +31,6 @@ public class FileIO {
     }
 
     private static void atualizarBancoPessoas(Path arquivo) {
-
         PessoaDatabase.saveAll(lerArquivoPessoas(arquivo));
     }
 
@@ -40,26 +41,52 @@ public class FileIO {
             return lines.stream()
                     .map(PessoaMapper::fileStringToPessoa)
                     .collect(Collectors.toList());
-
         } catch (IOException e) {
             throw new RuntimeException("Arquivo não encontrado!");
         }
     }
 
-    private static void gerarRelatorios() throws IOException {
-        var pessoas = PessoaDatabase.findAll();
+    private static void gerarRelatorios() {
+        List<Pessoa> pessoas = PessoaDatabase.findAll();
 
-        for (Pessoa pessoa : pessoas) {
-            Path filePath = Paths.get(RESOURCES_PATH, pessoa.getNome() + ".txt");
+        int tableHeaderContentLength = printTableHeader();
+        pessoas.parallelStream()
+                .forEach(pessoa -> {
+                    printTableContent(pessoa.getNome(), Thread.currentThread().toString());
 
-            List<String> results = getResultsPessoa(pessoa);
+                    Path filePath = Paths.get(RESOURCES_PATH, pessoa.getNome() + ".txt");
 
-            if (Files.exists(filePath))
-                Files.delete(filePath);
+                    List<String> results = getResultsPessoa(pessoa);
 
-            Files.createFile(filePath);
-            Files.write(filePath, results);
-        }
+                    try {
+                        if (Files.exists(filePath))
+                            Files.delete(filePath);
+
+                        Files.createFile(filePath);
+                        Files.write(filePath, results);
+                    } catch(IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+        printTableSeparator(tableHeaderContentLength);
+    }
+
+    private static int printTableHeader() {
+        String tableHeaderContent = String.format("%10s%5s | %29s%22s | %11s%7s", "NOME", "", "THREAD", "", "HORA", "");
+
+        printTableSeparator(tableHeaderContent.length());
+        System.out.println(tableHeaderContent);
+        printTableSeparator(tableHeaderContent.length());
+
+        return tableHeaderContent.length();
+    }
+
+    private static void printTableContent(String pessoaNome, String threadName) {
+        System.out.printf("%-15s | %-51s | %s%n", pessoaNome, threadName, LocalTime.now());
+    }
+
+    private static void printTableSeparator(int tableLength) {
+        System.out.println("-".repeat(tableLength));
     }
 
     private static List<String> getResultsPessoa(Pessoa pessoa) {
